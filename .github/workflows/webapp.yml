@@ -1,36 +1,31 @@
-name: Build and Deploy to Azure Web App
+name: Build and Deploy to Azure
 
 on:
   push:
     branches:
-      - main
+      - main  # Change this to your default branch
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
+    - name: Checkout Code
       uses: actions/checkout@v3
 
-    - name: Setup .NET Core
+    - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: '6.0.x'
+        dotnet-version: '6.0'  # Match your application's .NET version
 
-    - name: Restore dependencies
-      run: dotnet restore
+    - name: Login to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    - name: Build
-      run: dotnet build --configuration Release
-
-    - name: Publish
-      run: dotnet publish -c Release -o ./output
-
-    - name: Deploy to Azure Web App
+    - name: Deploy to Azure App Service
       uses: azure/webapps-deploy@v2
       with:
-        app-name: '<Your-App-Service-Name>'
-        slot-name: 'production'
-        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-        package: ./output
+        app-name: first-webapp
+        slot-name: 'production'  # Optional, for deployment slots
+        package: .  # Specify the deployment package
